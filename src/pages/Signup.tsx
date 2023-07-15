@@ -28,6 +28,7 @@ const Signup = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, isError, error } = useAppSelector((state) => state.user);
+  
   // ALERT MESSAGE ACTION START
   const [alert, setAlert] = React.useState('');
   const [alertOpen, setAlertOpen] = React.useState(false);

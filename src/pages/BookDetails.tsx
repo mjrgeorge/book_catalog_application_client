@@ -1,5 +1,14 @@
 import { useSingleBookQuery } from '@/redux/features/books/bookApi';
-import { Card, CardContent, Container, Typography } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import {
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { useParams } from 'react-router-dom';
 
 const BookDetails = () => {
@@ -11,6 +20,14 @@ const BookDetails = () => {
         <Typography variant="h5" align="center" gutterBottom>
           Books Details
         </Typography>
+        <Stack direction="row" spacing={2} sx={{my: 3}}>
+          <Button variant="outlined" color="warning" startIcon={<EditIcon />}>
+            Edit
+          </Button>
+          <Button variant="outlined" color="error" startIcon={<DeleteIcon />}>
+            Delete
+          </Button>
+        </Stack>
         <Card variant="elevation">
           <CardContent>
             <Typography variant="h6" color="text.secondary" gutterBottom>
