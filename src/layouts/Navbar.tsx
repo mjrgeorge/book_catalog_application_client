@@ -124,30 +124,30 @@ function Navbar() {
         </Link>
       </MenuItem>
       {!user.email && (
-        <>
-          <MenuItem onClick={handleMobileMenuClose}>
-            <IconButton size="large" color="inherit">
-              <AppRegistrationIcon />
-            </IconButton>
-            <Link
-              to="/signup"
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              Signup
-            </Link>
-          </MenuItem>
-          <MenuItem onClick={handleMobileMenuClose}>
-            <IconButton size="large" color="inherit">
-              <LoginIcon />
-            </IconButton>
-            <Link
-              to="/login"
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              Login
-            </Link>
-          </MenuItem>
-        </>
+        <MenuItem onClick={handleMobileMenuClose}>
+          <IconButton size="large" color="inherit">
+            <AppRegistrationIcon />
+          </IconButton>
+          <Link
+            to="/signup"
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            Signup
+          </Link>
+        </MenuItem>
+      )}
+      {!user.email && (
+        <MenuItem onClick={handleMobileMenuClose}>
+          <IconButton size="large" color="inherit">
+            <LoginIcon />
+          </IconButton>
+          <Link
+            to="/login"
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            Login
+          </Link>
+        </MenuItem>
       )}
       {user.email && (
         <MenuItem onClick={handleLogout}>
@@ -210,7 +210,6 @@ function Navbar() {
               </Link>
             </Button>
             {!user.email && (
-              <>
                 <Button color="inherit" sx={{ marginRight: 2 }}>
                   <Link
                     to="/signup"
@@ -219,6 +218,8 @@ function Navbar() {
                     Signup
                   </Link>
                 </Button>
+            )}
+            {!user.email && (
                 <Button color="inherit" sx={{ marginRight: 2 }}>
                   <Link
                     to="/login"
@@ -227,7 +228,6 @@ function Navbar() {
                     Login
                   </Link>
                 </Button>
-              </>
             )}
             {user.email && (
               <Button

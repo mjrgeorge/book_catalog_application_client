@@ -27,20 +27,17 @@ import * as Yup from 'yup';
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { user, isLoading, isError, error } = useAppSelector(
-    (state) => state.user
-  );
-
-  const [alert, setAlert] = React.useState('');
+  const { isLoading, isError, error } = useAppSelector((state) => state.user);
 
   // ALERT MESSAGE ACTION START
+  const [alert, setAlert] = React.useState('');
   const [alertOpen, setAlertOpen] = React.useState(false);
 
   const handleAlertClick = () => {
     setAlertOpen(true);
   };
   const handleAlertClose = (
-    event: React.SyntheticEvent | Event,
+    _event: React.SyntheticEvent | Event,
     reason?: string
   ) => {
     if (reason === 'clickaway') {
@@ -170,6 +167,7 @@ const Login = () => {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
+
       {/* ALERT MESSAGE SHOW */}
       <AlertMessage
         handleAlertClose={handleAlertClose}

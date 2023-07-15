@@ -1,7 +1,12 @@
+import AlertMessage from '@/components/AlertMessage';
+import { createUser } from '@/redux/features/user/userSlice';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {
+  Backdrop,
   Button,
+  CircularProgress,
   Container,
   FormControl,
   FormHelperText,
@@ -16,10 +21,32 @@ import {
 } from '@mui/material';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 
 const Signup = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { isLoading, isError, error } = useAppSelector((state) => state.user);
+  // ALERT MESSAGE ACTION START
+  const [alert, setAlert] = React.useState('');
+  const [alertOpen, setAlertOpen] = React.useState(false);
+
+  const handleAlertClick = () => {
+    setAlertOpen(true);
+  };
+  const handleAlertClose = (
+    _event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertOpen(false);
+  };
+  // ALERT MESSAGE ACTION END
+
   const initialValues = {
     email: '',
     password: '',
@@ -46,11 +73,27 @@ const Signup = () => {
       .required('Re_type password is required'),
   });
 
-  const onSubmit = (values: object, props: { resetForm: () => void }) => {
+  const onSubmit = (
+    values: { email: string; password: string },
+    props: { resetForm: () => void }
+  ) => {
     const formReset = () => {
       props.resetForm();
     };
-    console.log(values);
+    dispatch(createUser({ email: values.email, password: values.password }));
+
+    setAlert('');
+    if (isLoading) {
+      formReset();
+    }
+    if (isError) {
+      setAlert(error);
+      handleAlertClick();
+    } else {
+      setAlert('Successfully logged in');
+      handleAlertClick();
+      navigate('/');
+    }
   };
 
   const [showPassword, setShowPassword] = React.useState(false);
@@ -173,6 +216,19 @@ const Signup = () => {
           )}
         </Formik>
       </Paper>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
+      {/* ALERT MESSAGE SHOW */}
+      <AlertMessage
+        handleAlertClose={handleAlertClose}
+        alertOpen={alertOpen}
+        alert={alert}
+      />
     </Container>
   );
 };
