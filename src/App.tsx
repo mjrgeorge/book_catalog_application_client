@@ -1,9 +1,9 @@
-import Button from '@mui/material/Button';
+import MainLayout from './layouts/MainLayout';
 
 const App = () => {
   return (
     <div>
-      <Button variant="contained">Hello World</Button>
+      <MainLayout />
     </div>
   )
 }
