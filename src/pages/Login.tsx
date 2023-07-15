@@ -102,7 +102,7 @@ const Login = () => {
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <Typography variant="h5" align="center" gutterBottom>
-                    Registration
+                    Login
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>

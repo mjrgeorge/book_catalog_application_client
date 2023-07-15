@@ -10,7 +10,7 @@ export default function MainLayout() {
       <Toolbar />
       <Box
         sx={{
-          minHeight: '50vh',
+          minHeight: '100vh',
         }}
       >
         <Outlet />
