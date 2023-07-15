@@ -1,16 +1,28 @@
 import BookCard from '@/components/BookCard';
 import { useGetBooksQuery } from '@/redux/features/books/bookApi';
 import { IBook } from '@/types/globalTypes';
-import { Grid, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 
 const AllBook = () => {
   const { data, isLoading, error } = useGetBooksQuery(undefined);
-  console.log(data, isLoading, error);
   return (
-    <div>
-      <Typography variant="h5" align="center" gutterBottom>
-        All Books
-      </Typography>
+    <Container maxWidth="lg">
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        spacing={2}
+        sx={{ my: 3 }}
+      >
+        <Typography variant="h5" align="center" gutterBottom>
+          All Books
+        </Typography>
+
+        <Button variant="outlined" startIcon={<AddIcon />}>
+          Add Book
+        </Button>
+      </Stack>
       <Grid
         container
         direction="row"
@@ -22,7 +34,7 @@ const AllBook = () => {
           <BookCard key={book?._id} book={book} />
         ))}
       </Grid>
-    </div>
+    </Container>
   );
 };
 
