@@ -1,9 +1,13 @@
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import SchoolIcon from '@mui/icons-material/School';
+import { auth } from '@/lib/firebase';
+import { setUser } from '@/redux/features/user/userSlice';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import MenuIcon from '@mui/icons-material/Menu';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import MoreIcon from '@mui/icons-material/MoreVert';
+import SchoolIcon from '@mui/icons-material/School';
 import SearchIcon from '@mui/icons-material/Search';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -15,7 +19,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { alpha, styled } from '@mui/material/styles';
+import { signOut } from 'firebase/auth';
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -58,51 +64,28 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 function Navbar() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const { user } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    signOut(auth).then(() => {
+      dispatch(setUser(null));
+    });
+    handleMobileMenuClose();
+  };
+
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
 
-  const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
-
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
-
-  const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Login</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Signup</MenuItem>
-    </Menu>
-  );
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
@@ -121,34 +104,59 @@ function Navbar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+      <MenuItem onClick={handleMobileMenuClose}>
+        <IconButton size="large" color="inherit">
           <LibraryBooksIcon />
         </IconButton>
-        <p>All Book</p>
+        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+          All Book
+        </Link>
       </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
+      <MenuItem onClick={handleMobileMenuClose}>
+        <IconButton size="large" color="inherit">
           <MenuBookIcon />
         </IconButton>
-        <p>Recent Book</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
+        <Link
+          to="/recent_book"
+          style={{ textDecoration: 'none', color: 'inherit' }}
         >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
+          Recent Book
+        </Link>
       </MenuItem>
+      {!user.email && (
+        <>
+          <MenuItem onClick={handleMobileMenuClose}>
+            <IconButton size="large" color="inherit">
+              <AppRegistrationIcon />
+            </IconButton>
+            <Link
+              to="/signup"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              Signup
+            </Link>
+          </MenuItem>
+          <MenuItem onClick={handleMobileMenuClose}>
+            <IconButton size="large" color="inherit">
+              <LoginIcon />
+            </IconButton>
+            <Link
+              to="/login"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              Login
+            </Link>
+          </MenuItem>
+        </>
+      )}
+      {user.email && (
+        <MenuItem onClick={handleLogout}>
+          <IconButton size="large" color="inherit">
+            <LogoutIcon />
+          </IconButton>
+          <p>Logout</p>
+        </MenuItem>
+      )}
     </Menu>
   );
 
@@ -156,22 +164,26 @@ function Navbar() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <SchoolIcon />
-          </IconButton>
+          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              sx={{ mr: 2 }}
+            >
+              <SchoolIcon />
+            </IconButton>
+          </Link>
           <Typography
             variant="h6"
             noWrap
             component="div"
             sx={{ display: { xs: 'none', sm: 'block' } }}
           >
-            Book Catalog App
+            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              Book Catalog App
+            </Link>
           </Typography>
           <Search>
             <SearchIconWrapper>
@@ -184,30 +196,48 @@ function Navbar() {
           </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Button
-              color="inherit"
-              sx={{ marginRight: 2 }}
-            >
-              All Book
+            <Button color="inherit" sx={{ marginRight: 2 }}>
+              <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+                All Book
+              </Link>
             </Button>
-            <Button
-              color="inherit"
-              sx={{ marginRight: 2 }}
-            >
-              Recent Book
+            <Button color="inherit" sx={{ marginRight: 2 }}>
+              <Link
+                to="/recent_book"
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                Recent Book
+              </Link>
             </Button>
-            <Button
-              color="inherit"
-              sx={{ marginRight: 2 }}
-            >
-              Login
-            </Button>
-            <Button
-              color="inherit"
-              sx={{ marginRight: 2 }}
-            >
-              Signup
-            </Button>
+            {!user.email && (
+              <>
+                <Button color="inherit" sx={{ marginRight: 2 }}>
+                  <Link
+                    to="/signup"
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    Signup
+                  </Link>
+                </Button>
+                <Button color="inherit" sx={{ marginRight: 2 }}>
+                  <Link
+                    to="/login"
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    Login
+                  </Link>
+                </Button>
+              </>
+            )}
+            {user.email && (
+              <Button
+                color="inherit"
+                sx={{ marginRight: 2 }}
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            )}
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -224,7 +254,6 @@ function Navbar() {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {renderMenu}
     </Box>
   );
 }
