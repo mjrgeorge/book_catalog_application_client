@@ -3,6 +3,7 @@ import {
   useGetBooksQuery,
   usePostBookMutation,
 } from '@/redux/features/books/bookApi';
+import { useAppSelector } from '@/redux/hook';
 import { IBook } from '@/types/globalTypes';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
@@ -66,6 +67,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const AllBook = () => {
   const { data, isLoading } = useGetBooksQuery(undefined);
+  const { user } = useAppSelector((state) => state.user);
 
   const [postBook, { isLoading: isCreateLoading }] = usePostBookMutation();
 
@@ -152,13 +154,15 @@ const AllBook = () => {
         <Typography variant="h5" align="center" gutterBottom>
           All Books
         </Typography>
-        <Button
-          variant="outlined"
-          startIcon={<AddIcon />}
-          onClick={handleClickOpen}
-        >
-          Add Book
-        </Button>
+        {user?.email && (
+          <Button
+            variant="outlined"
+            startIcon={<AddIcon />}
+            onClick={handleClickOpen}
+          >
+            Add New Book
+          </Button>
+        )}
       </Stack>
       <Stack
         direction="row"

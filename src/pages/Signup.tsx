@@ -59,15 +59,8 @@ const Signup = () => {
       .email('Enter valid email')
       .required('Email is required'),
     password: Yup.string()
-      .matches(/^\S*$/, 'Please avoid white space')
-      .matches(/[A-Z]/, 'Minimum 1 capital letter')
-      .matches(/[a-z]/, 'Minimum 1 small letter')
-      .matches(
-        /[ !"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~]/,
-        'Minimum 1 special character'
-      )
-      .min(8, 'Minimum characters should be 8')
-      .max(32, 'Maximum characters should be 32')
+      .min(6, 'Minimum characters should be 6')
+      .max(20, 'Maximum characters should be 20')
       .required('Password is required'),
     re_password: Yup.string()
       .oneOf([Yup.ref('password')], 'Password does not matches')
