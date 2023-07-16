@@ -64,12 +64,10 @@ const BookDetails = () => {
     };
     const options = {
       id: id,
-      data: {
-        title: values.title,
-        author: values.author,
-        genre: values.genre,
-        publicationYear: values.publicationYear,
-      },
+      title: values.title,
+      author: values.author,
+      genre: values.genre,
+      publicationYear: values.publicationYear,
     };
 
     updateBook(options);
