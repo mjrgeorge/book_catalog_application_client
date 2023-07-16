@@ -106,6 +106,7 @@ const AllBook = () => {
         author: values.author,
         genre: values.genre,
         publicationYear: values.publicationYear,
+        userEmail: user.email,
       },
     };
 

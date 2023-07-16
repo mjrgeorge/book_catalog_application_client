@@ -3,6 +3,7 @@ import {
   useSingleBookQuery,
   useUpdateBookMutation,
 } from '@/redux/features/books/bookApi';
+import { useAppSelector } from '@/redux/hook';
 import { IBook } from '@/types/globalTypes';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -29,6 +30,7 @@ import * as Yup from 'yup';
 const BookDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { user } = useAppSelector((state) => state.user);
   const { data, isLoading } = useSingleBookQuery(id);
 
   const [updateBook, { isLoading: isUpdateLoading }] = useUpdateBookMutation();
@@ -68,6 +70,7 @@ const BookDetails = () => {
       author: values.author,
       genre: values.genre,
       publicationYear: values.publicationYear,
+      userEmail: user.email,
     };
 
     updateBook(options);
@@ -83,24 +86,26 @@ const BookDetails = () => {
         <Typography variant="h5" align="center" gutterBottom>
           Books Details
         </Typography>
-        <Stack direction="row" spacing={2} sx={{ my: 3 }}>
-          <Button
-            variant="outlined"
-            color="warning"
-            startIcon={<EditIcon />}
-            onClick={handleClickOpen}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outlined"
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={() => deletePost(id).then(() => navigate('/'))}
-          >
-            Delete
-          </Button>
-        </Stack>
+        {user?.email === data?.data?.userEmail && (
+          <Stack direction="row" spacing={2} sx={{ my: 3 }}>
+            <Button
+              variant="outlined"
+              color="warning"
+              startIcon={<EditIcon />}
+              onClick={handleClickOpen}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => deletePost(id).then(() => navigate('/'))}
+            >
+              Delete
+            </Button>
+          </Stack>
+        )}
         <Card variant="elevation">
           <CardContent>
             <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -120,11 +125,23 @@ const BookDetails = () => {
             >
               {data?.data?.genre}
             </Typography>
-            <Typography variant="body2">
+            <Typography variant="body1">
               Publication Year
               <br />
               {data?.data?.publicationYear}
             </Typography>
+            {data?.data?.reviews?.length > 0 && (
+              <Typography variant="body2">
+                Review:
+                {data?.data?.reviews?.map(
+                  (review: { title: string; userEmail: string }) => (
+                    <Typography color="text.secondary" gutterBottom>
+                      {review?.title}
+                    </Typography>
+                  )
+                )}
+              </Typography>
+            )}
           </CardContent>
         </Card>
         <Dialog open={open} onClose={handleClose}>
