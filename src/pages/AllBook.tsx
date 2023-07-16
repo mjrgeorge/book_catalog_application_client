@@ -5,6 +5,7 @@ import {
 } from '@/redux/features/books/bookApi';
 import { IBook } from '@/types/globalTypes';
 import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Backdrop,
   Button,
@@ -17,15 +18,54 @@ import {
 } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
+import InputBase from '@mui/material/InputBase';
 import TextField from '@mui/material/TextField';
+import { alpha, styled } from '@mui/material/styles';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import React from 'react';
+import * as React from 'react';
 import * as Yup from 'yup';
+
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginBottom: theme.spacing(3),
+  width: '100%',
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    border: '1px solid black',
+    borderRadius: '5px',
+    [theme.breakpoints.up('md')]: {
+      width: '20ch',
+    },
+  },
+}));
 
 const AllBook = () => {
   const { data, isLoading } = useGetBooksQuery(undefined);
 
-  const [postBook, { isLoading : isCreateLoading }] = usePostBookMutation();
+  const [postBook, { isLoading: isCreateLoading }] = usePostBookMutation();
 
   const [open, setOpen] = React.useState(false);
 
@@ -70,6 +110,12 @@ const AllBook = () => {
     handleClose();
   };
 
+  const [searchTerm, setSearchTerm] = React.useState('');
+
+  const handleSearch = (searchValue: string): void => {
+    setSearchTerm(searchValue);
+  };
+
   return (
     <Container maxWidth="lg">
       <Stack
@@ -91,6 +137,16 @@ const AllBook = () => {
           Add Book
         </Button>
       </Stack>
+      <Search>
+        <SearchIconWrapper>
+          <SearchIcon />
+        </SearchIconWrapper>
+        <StyledInputBase
+          placeholder="Search…"
+          inputProps={{ 'aria-label': 'search' }}
+          onChange={(e) => handleSearch(e.target.value)}
+        />
+      </Search>
       <Grid
         container
         direction="row"
@@ -98,9 +154,21 @@ const AllBook = () => {
         alignItems="center"
         spacing={2}
       >
-        {data?.data?.map((book: IBook) => (
-          <BookCard key={book?.id} book={book} />
-        ))}
+        {data?.data
+          ?.filter((item: IBook) => {
+            for (const value of Object.values(item)) {
+              if (
+                typeof value === 'string' &&
+                new RegExp(searchTerm, 'i').test(value)
+              ) {
+                return true;
+              }
+            }
+            return false;
+          })
+          ?.map((book: IBook) => (
+            <BookCard key={book?.id} book={book} />
+          ))}
       </Grid>
       <Dialog open={open} onClose={handleClose}>
         <DialogContent>
