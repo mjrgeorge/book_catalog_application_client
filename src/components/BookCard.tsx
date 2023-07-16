@@ -52,7 +52,7 @@ export default function BookCard({ book }: IProps) {
         <CardActions>
           <Button size="small">
             <Link
-              to={`/book/${book?._id}`}
+              to={`/book/${book?.id}`}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
               Details

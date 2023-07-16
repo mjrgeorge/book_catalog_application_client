@@ -38,6 +38,9 @@ const bookApi = api.injectEndpoints({
       },
       invalidatesTags: ['books'],
     }),
+    getRecentBooks: builder.query({
+      query: () => '/books?sortBy=createdAt&sortOrder=desc&page=1&limit=10',
+    }),
   }),
 });
 
@@ -47,4 +50,5 @@ export const {
   usePostBookMutation,
   useUpdateBookMutation,
   useDeleteBookMutation,
+  useGetRecentBooksQuery,
 } = bookApi;

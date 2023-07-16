@@ -23,10 +23,9 @@ import React from 'react';
 import * as Yup from 'yup';
 
 const AllBook = () => {
-  const { data } = useGetBooksQuery(undefined);
+  const { data, isLoading } = useGetBooksQuery(undefined);
 
-  const [postBook, { isLoading }] =
-    usePostBookMutation();
+  const [postBook, { isLoading : isCreateLoading }] = usePostBookMutation();
 
   const [open, setOpen] = React.useState(false);
 
@@ -42,8 +41,8 @@ const AllBook = () => {
     title: '',
     author: '',
     genre: '',
-    publicationYear: 0,
-    _id: 0,
+    publicationYear: 2023,
+    id: 0,
   };
 
   const validationSchema = Yup.object().shape({
@@ -100,7 +99,7 @@ const AllBook = () => {
         spacing={2}
       >
         {data?.data?.map((book: IBook) => (
-          <BookCard key={book?._id} book={book} />
+          <BookCard key={book?.id} book={book} />
         ))}
       </Grid>
       <Dialog open={open} onClose={handleClose}>
@@ -153,26 +152,26 @@ const AllBook = () => {
                           helperText={<ErrorMessage name="genre" />}
                           required
                         />
-                        <Grid item xs={12}>
-                          <Field
-                            as={TextField}
-                            name="publicationYear"
-                            label="Publication Year"
-                            type="number"
-                            fullWidth
-                            error={
-                              formik.errors.publicationYear &&
-                              formik.touched.publicationYear
-                            }
-                            helperText={<ErrorMessage name="publicationYear" />}
-                            required
-                          />
-                        </Grid>
-                        <Grid item xs={12}>
-                          <Button type="submit" variant="contained" fullWidth>
-                            Save
-                          </Button>
-                        </Grid>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Field
+                          as={TextField}
+                          name="publicationYear"
+                          label="Publication Year"
+                          type="number"
+                          fullWidth
+                          error={
+                            formik.errors.publicationYear &&
+                            formik.touched.publicationYear
+                          }
+                          helperText={<ErrorMessage name="publicationYear" />}
+                          required
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Button type="submit" variant="contained" fullWidth>
+                          Save
+                        </Button>
                       </Grid>
                     </Grid>
                   </Form>
@@ -184,7 +183,7 @@ const AllBook = () => {
       </Dialog>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLoading}
+        open={isLoading || isCreateLoading}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
