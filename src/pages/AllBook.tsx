@@ -8,10 +8,12 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Backdrop,
+  Box,
   Button,
   CircularProgress,
   Container,
   Grid,
+  MenuItem,
   Paper,
   Stack,
   Typography,
@@ -116,6 +118,28 @@ const AllBook = () => {
     setSearchTerm(searchValue);
   };
 
+  const [genreFilter, setGenreFilter] = React.useState('All');
+  const [yearFilter, setYearFilter] = React.useState('');
+
+  const uniqueGenres = Array.from(
+    new Set(data?.data?.map((book: { genre: string }) => book.genre))
+  );
+  const uniqueYears = Array.from(
+    new Set(
+      data?.data?.map(
+        (book: { publicationYear: number }) => book.publicationYear
+      )
+    )
+  );
+
+  const handleGenreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setGenreFilter(e.target.value);
+  };
+
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setYearFilter(e.target.value);
+  };
+
   return (
     <Container maxWidth="lg">
       <Stack
@@ -128,7 +152,6 @@ const AllBook = () => {
         <Typography variant="h5" align="center" gutterBottom>
           All Books
         </Typography>
-
         <Button
           variant="outlined"
           startIcon={<AddIcon />}
@@ -137,16 +160,60 @@ const AllBook = () => {
           Add Book
         </Button>
       </Stack>
-      <Search>
-        <SearchIconWrapper>
-          <SearchIcon />
-        </SearchIconWrapper>
-        <StyledInputBase
-          placeholder="Search…"
-          inputProps={{ 'aria-label': 'search' }}
-          onChange={(e) => handleSearch(e.target.value)}
-        />
-      </Search>
+      <Stack
+        direction="row"
+        justifyContent="flex-end"
+        alignItems="center"
+        spacing={2}
+        sx={{
+          '& .MuiTextField-root': { m: 1, width: '25ch' },
+        }}
+      >
+        <Search>
+          <SearchIconWrapper>
+            <SearchIcon />
+          </SearchIconWrapper>
+          <StyledInputBase
+            placeholder="Search…"
+            inputProps={{ 'aria-label': 'search' }}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+        </Search>
+        <Box>
+          <TextField
+            select
+            label="Genre"
+            defaultValue="All"
+            value={genreFilter}
+            onChange={handleGenreChange}
+            fullWidth
+          >
+            <MenuItem value="All">All</MenuItem>
+            {uniqueGenres.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+
+          <TextField
+            select
+            label="Publication Year"
+            defaultValue="All"
+            value={yearFilter}
+            onChange={handleYearChange}
+            fullWidth
+          >
+            <MenuItem value="All">All</MenuItem>
+            {uniqueYears.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Box>
+      </Stack>
+
       <Grid
         container
         direction="row"
@@ -166,6 +233,12 @@ const AllBook = () => {
             }
             return false;
           })
+          ?.filter(
+            (book: { genre: string; publicationYear: number }) =>
+              (genreFilter === 'All' || book.genre === genreFilter) &&
+              (isNaN(parseInt(yearFilter)) ||
+                book.publicationYear === parseInt(yearFilter))
+          )
           ?.map((book: IBook) => (
             <BookCard key={book?.id} book={book} />
           ))}
