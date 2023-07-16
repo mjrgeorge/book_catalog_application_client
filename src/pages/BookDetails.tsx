@@ -2,6 +2,7 @@ import {
   useDeleteBookMutation,
   useSingleBookQuery,
   useUpdateBookMutation,
+  useUpdateBookWithReviewMutation,
 } from '@/redux/features/books/bookApi';
 import { useAppSelector } from '@/redux/hook';
 import { IBook } from '@/types/globalTypes';
@@ -80,6 +81,17 @@ const BookDetails = () => {
 
   const [deletePost, { isLoading: isDeleting }] = useDeleteBookMutation();
 
+  const [
+    updateBookWithReview,
+    { isLoading: isUpdateReviewLoading, isSuccess, isError },
+  ] = useUpdateBookWithReviewMutation();
+  const [reviewText, setReviewText] = React.useState('');
+
+  const handleReview = () => {
+    updateBookWithReview({ id: data?.data?.id, title: reviewText });
+    setReviewText('');
+  };
+
   return (
     <Container maxWidth="lg">
       <main>
@@ -130,17 +142,27 @@ const BookDetails = () => {
               <br />
               {data?.data?.publicationYear}
             </Typography>
+            <Stack direction="row" spacing={2} sx={{ my: 3 }}>
+              <TextField
+                label="Review"
+                value={reviewText}
+                variant="outlined"
+                onChange={(e) => setReviewText(e.target.value)}
+              />
+              <Button variant="contained" onClick={handleReview}>
+                Send
+              </Button>
+            </Stack>
             {data?.data?.reviews?.length > 0 && (
-              <Typography variant="body2">
-                Review:
+              <Stack spacing={1} sx={{ my: 3 }}>
                 {data?.data?.reviews?.map(
-                  (review: { title: string; userEmail: string }) => (
-                    <Typography color="text.secondary" gutterBottom>
-                      {review?.title}
+                  (review: { title: string; userEmail: string }, index) => (
+                    <Typography key={index} color="text.secondary" gutterBottom>
+                      {index + 1}. {review?.title}
                     </Typography>
                   )
                 )}
-              </Typography>
+              </Stack>
             )}
           </CardContent>
         </Card>
@@ -228,7 +250,9 @@ const BookDetails = () => {
       </main>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLoading || isUpdateLoading || isDeleting}
+        open={
+          isLoading || isUpdateLoading || isDeleting || isUpdateReviewLoading
+        }
       >
         <CircularProgress color="inherit" />
       </Backdrop>
