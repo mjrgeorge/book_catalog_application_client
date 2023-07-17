@@ -156,7 +156,10 @@ const BookDetails = () => {
             {data?.data?.reviews?.length > 0 && (
               <Stack spacing={1} sx={{ my: 3 }}>
                 {data?.data?.reviews?.map(
-                  (review: { title: string; userEmail: string }, index) => (
+                  (
+                    review: { title: string; userEmail: string },
+                    index: number
+                  ) => (
                     <Typography key={index} color="text.secondary" gutterBottom>
                       {index + 1}. {review?.title}
                     </Typography>
