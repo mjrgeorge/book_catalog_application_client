@@ -70,7 +70,7 @@ const AllBook = () => {
   const { data, isLoading } = useGetBooksQuery(undefined);
   const { user } = useAppSelector((state) => state.user);
 
-  const [postBook, { isLoading: isCreateLoading, isError, isSuccess, error }] =
+  const [postBook, { isLoading: isCreateLoading, isError, isSuccess }] =
     usePostBookMutation();
 
   const [open, setOpen] = React.useState(false);
