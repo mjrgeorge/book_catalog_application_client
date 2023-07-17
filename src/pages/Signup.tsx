@@ -27,7 +27,9 @@ import * as Yup from 'yup';
 const Signup = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isLoading, isError, error } = useAppSelector((state) => state.user);
+  const { user, isLoading, isError, error } = useAppSelector(
+    (state) => state.user
+  );
 
   // ALERT MESSAGE ACTION START
   const [alert, setAlert] = React.useState<string | null>(null);
@@ -67,27 +69,9 @@ const Signup = () => {
       .required('Re_type password is required'),
   });
 
-  const onSubmit = (
-    values: { email: string; password: string },
-    props: { resetForm: () => void }
-  ) => {
-    const formReset = () => {
-      props.resetForm();
-    };
+  const onSubmit = (values: { email: string; password: string }) => {
     dispatch(createUser({ email: values.email, password: values.password }));
-
     setAlert('');
-    if (isLoading) {
-      formReset();
-    }
-    if (isError) {
-      setAlert(error);
-      handleAlertClick();
-    } else {
-      setAlert('Successfully logged in');
-      handleAlertClick();
-      navigate('/');
-    }
   };
 
   const [showPassword, setShowPassword] = React.useState(false);
@@ -99,6 +83,19 @@ const Signup = () => {
   const handleClickShowRePassword = () => {
     setShowRePassword(!showRePassword);
   };
+
+  React.useEffect(() => {
+    if (isError) {
+      setAlert(error);
+      handleAlertClick();
+    }
+    if (user?.email && !isLoading) {
+      setAlert('Successfully logged in');
+      handleAlertClick();
+      navigate('/');
+    }
+  }, [error, isError, isLoading, navigate, user?.email]);
+
   return (
     <Container maxWidth="sm">
       <Paper elevation={3} sx={{ p: 3 }}>

@@ -8,7 +8,7 @@ const bookApi = api.injectEndpoints({
     }),
     singleBook: builder.query({
       query: (id) => `/books/${id}`,
-      providesTags: ['book'],
+      providesTags: ['book', 'singleBook'],
     }),
     postBook: builder.mutation({
       query: ({ data }) => ({
@@ -47,7 +47,7 @@ const bookApi = api.injectEndpoints({
           method: 'DELETE',
         };
       },
-      invalidatesTags: ['books'],
+      invalidatesTags: ['books', 'singleBook'],
     }),
     getRecentBooks: builder.query({
       query: () => '/books?sortBy=createdAt&sortOrder=desc&page=1&limit=10',

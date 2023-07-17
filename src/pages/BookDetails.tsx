@@ -13,9 +13,13 @@ import {
   Backdrop,
   Button,
   Card,
+  CardActionArea,
   CardContent,
   CircularProgress,
   Container,
+  DialogActions,
+  DialogContentText,
+  DialogTitle,
   Grid,
   Paper,
   Stack,
@@ -100,7 +104,29 @@ const BookDetails = () => {
     handleClose();
   };
 
-  const [deletePost, { isLoading: isDeleteLoading }] = useDeleteBookMutation();
+  const [
+    deletePost,
+    {
+      isLoading: isDeleteLoading,
+      isSuccess: isDeleteSuccess,
+      isError: isDeleteError,
+    },
+  ] = useDeleteBookMutation();
+
+  const [confirmationOpen, setConfirmationOpen] = React.useState(false);
+
+  const handleConfirmationClickOpen = () => {
+    setConfirmationOpen(true);
+  };
+
+  const handleConfirmationClose = () => {
+    setConfirmationOpen(false);
+  };
+
+  const handleConfirmDelete = () => {
+    deletePost(id);
+    setConfirmationOpen(false);
+  };
 
   const [
     updateBookWithReview,
@@ -118,15 +144,22 @@ const BookDetails = () => {
   };
 
   React.useEffect(() => {
-    if (isSuccess || isReviewSuccess) {
+    if (isSuccess || isDeleteSuccess || isReviewSuccess) {
       setAlert('Success');
       handleAlertClick();
     }
-    if (isError || isReviewError) {
+    if (isError || isDeleteError || isReviewError) {
       setAlert('Something went wrong');
       handleAlertClick();
     }
-  }, [isError, isReviewError, isReviewSuccess, isSuccess]);
+  }, [
+    isDeleteError,
+    isDeleteSuccess,
+    isError,
+    isReviewError,
+    isReviewSuccess,
+    isSuccess,
+  ]);
 
   return (
     <Container maxWidth="lg">
@@ -134,7 +167,7 @@ const BookDetails = () => {
         <Typography variant="h5" align="center" gutterBottom>
           Books Details
         </Typography>
-        {user?.email === data?.data?.userEmail && (
+        {data?.data?.title && user?.email === data?.data?.userEmail && (
           <Stack direction="row" spacing={2} sx={{ my: 3 }}>
             <Button
               variant="outlined"
@@ -148,62 +181,85 @@ const BookDetails = () => {
               variant="outlined"
               color="error"
               startIcon={<DeleteIcon />}
-              onClick={() => deletePost(id).then(() => navigate('/'))}
+              onClick={handleConfirmationClickOpen}
             >
               Delete
             </Button>
           </Stack>
         )}
-        <Card variant="elevation">
-          <CardContent>
-            <Typography variant="h6" color="text.secondary" gutterBottom>
-              {data?.data?.title}
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ mb: 1.5 }}
-              color="text.secondary"
-            >
-              {data?.data?.author}
-            </Typography>
-            <Typography
-              variant="subtitle2"
-              sx={{ mb: 1.5 }}
-              color="text.secondary"
-            >
-              {data?.data?.genre}
-            </Typography>
-            <Typography variant="body1">
-              Publication Year
-              <br />
-              {data?.data?.publicationYear}
-            </Typography>
-            <Stack direction="row" spacing={2} sx={{ my: 3 }}>
-              <TextField
-                label="Review"
-                value={reviewText}
-                variant="outlined"
-                onChange={(e) => setReviewText(e.target.value)}
-              />
-              <Button variant="contained" onClick={handleReview}>
-                Send
-              </Button>
-            </Stack>
-            {data?.data?.reviews?.length > 0 && (
-              <Stack spacing={1} sx={{ my: 3 }}>
-                {data?.data?.reviews?.map(
-                  (
-                    review: { title: string; userEmail: string },
-                    index: number
-                  ) => (
-                    <Typography key={index} color="text.secondary" gutterBottom>
-                      {index + 1}. {review?.title}
-                    </Typography>
-                  )
-                )}
+        <Card variant="elevation" sx={{ minHeight: '50vh', p: 3 }}>
+          {data?.data?.title && (
+            <CardContent>
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                {data?.data?.title}
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{ mb: 1.5 }}
+                color="text.secondary"
+              >
+                {data?.data?.author}
+              </Typography>
+              <Typography
+                variant="subtitle2"
+                sx={{ mb: 1.5 }}
+                color="text.secondary"
+              >
+                {data?.data?.genre}
+              </Typography>
+              <Typography variant="body1">
+                Publication Year
+                <br />
+                {data?.data?.publicationYear}
+              </Typography>
+              <Stack direction="row" spacing={2} sx={{ my: 3 }}>
+                <TextField
+                  label="Review"
+                  value={reviewText}
+                  variant="outlined"
+                  onChange={(e) => setReviewText(e.target.value)}
+                />
+                <Button variant="contained" onClick={handleReview}>
+                  Send
+                </Button>
               </Stack>
-            )}
-          </CardContent>
+              {data?.data?.reviews?.length > 0 && (
+                <Stack spacing={1} sx={{ my: 3 }}>
+                  {data?.data?.reviews?.map(
+                    (
+                      review: { title: string; userEmail: string },
+                      index: number
+                    ) => (
+                      <Typography
+                        key={index}
+                        color="text.secondary"
+                        gutterBottom
+                      >
+                        {index + 1}. {review?.title}
+                      </Typography>
+                    )
+                  )}
+                </Stack>
+              )}
+            </CardContent>
+          )}
+          {!data?.data?.title && (
+            <CardContent>
+              <Typography variant="h6" align="center" color="red" gutterBottom>
+                Data Not Found!
+              </Typography>
+            </CardContent>
+          )}
+          <CardActionArea>
+            <Button
+              variant="outlined"
+              size="small"
+              color="info"
+              onClick={() => navigate('/')}
+            >
+              Back to Book List
+            </Button>
+          </CardActionArea>
         </Card>
         <Dialog open={open} onClose={handleClose}>
           <DialogContent>
@@ -285,6 +341,25 @@ const BookDetails = () => {
               </Paper>
             </Container>
           </DialogContent>
+        </Dialog>
+        <Dialog
+          open={confirmationOpen}
+          onClose={handleConfirmationClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">Confirmation</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Are you sure you want to delete this book?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleConfirmationClose}>No</Button>
+            <Button onClick={handleConfirmDelete} autoFocus>
+              Yes
+            </Button>
+          </DialogActions>
         </Dialog>
       </main>
       <Backdrop

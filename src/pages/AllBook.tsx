@@ -242,36 +242,43 @@ const AllBook = () => {
           </TextField>
         </Box>
       </Stack>
-
-      <Grid
-        container
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        spacing={2}
-      >
-        {data?.data
-          ?.filter((item: IBook) => {
-            for (const value of Object.values(item)) {
-              if (
-                typeof value === 'string' &&
-                new RegExp(searchTerm, 'i').test(value)
-              ) {
-                return true;
+      {!data?.data?.length && !isLoading && (
+        <Typography variant="h6" align="center" color="red" gutterBottom>
+          Data Not Found!
+        </Typography>
+      )}
+      {data?.data?.length > 0 && !isLoading && (
+        <Grid
+          container
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={2}
+        >
+          {data?.data
+            ?.filter((item: IBook) => {
+              for (const value of Object.values(item)) {
+                if (
+                  typeof value === 'string' &&
+                  new RegExp(searchTerm, 'i').test(value)
+                ) {
+                  return true;
+                }
               }
-            }
-            return false;
-          })
-          ?.filter(
-            (book: { genre: string; publicationYear: number }) =>
-              (genreFilter === 'All' || book.genre === genreFilter) &&
-              (isNaN(parseInt(yearFilter)) ||
-                book.publicationYear === parseInt(yearFilter))
-          )
-          ?.map((book: IBook) => (
-            <BookCard key={book?.id} book={book} />
-          ))}
-      </Grid>
+              return false;
+            })
+            ?.filter(
+              (book: { genre: string; publicationYear: number }) =>
+                (genreFilter === 'All' || book.genre === genreFilter) &&
+                (isNaN(parseInt(yearFilter)) ||
+                  book.publicationYear === parseInt(yearFilter))
+            )
+            ?.map((book: IBook) => (
+              <BookCard key={book?.id} book={book} />
+            ))}
+        </Grid>
+      )}
+
       <Dialog open={open} onClose={handleClose}>
         <DialogContent>
           <Container maxWidth="sm">
