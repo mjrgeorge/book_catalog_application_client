@@ -220,7 +220,7 @@ const BookDetails = () => {
                       <Grid container spacing={3}>
                         <Grid item xs={12}>
                           <Typography variant="h5" align="center" gutterBottom>
-                            New Book Entry
+                            Book Edit
                           </Typography>
                         </Grid>
                         <Grid item xs={12}>
