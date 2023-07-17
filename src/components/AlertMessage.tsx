@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import CloseIcon from '@mui/icons-material/Close';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import * as React from 'react';
@@ -8,7 +8,7 @@ export default function AlertMessage({
   handleAlertClose,
   alertOpen,
   alert,
-}) {
+}: any) {
   const action = (
     <React.Fragment>
       <IconButton

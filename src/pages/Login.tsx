@@ -27,10 +27,12 @@ import * as Yup from 'yup';
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isLoading, isError, error } = useAppSelector((state) => state.user);
+  const { user, isLoading, isError, error } = useAppSelector(
+    (state) => state.user
+  );
 
   // ALERT MESSAGE ACTION START
-  const [alert, setAlert] = React.useState('');
+  const [alert, setAlert] = React.useState<string | null>(null);
   const [alertOpen, setAlertOpen] = React.useState(false);
 
   const handleAlertClick = () => {
@@ -60,33 +62,27 @@ const Login = () => {
     password: Yup.string().required('Password is required'),
   });
 
-  const onSubmit = (
-    values: { email: string; password: string },
-    props: { resetForm: () => void }
-  ) => {
-    const formReset = () => {
-      props.resetForm();
-    };
-
+  const onSubmit = (values: { email: string; password: string }) => {
     dispatch(loginUser({ email: values.email, password: values.password }));
     setAlert('');
-    if (isLoading) {
-      formReset();
-    }
-    if (isError) {
-      setAlert(error);
-      handleAlertClick();
-    } else {
-      setAlert('Successfully logged in');
-      handleAlertClick();
-      navigate('/');
-    }
   };
 
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
+
+  React.useEffect(() => {
+    if (isError) {
+      setAlert(error);
+      handleAlertClick();
+    }
+    if (user.email && !isLoading) {
+      setAlert('Successfully logged in');
+      handleAlertClick();
+      navigate('/');
+    }
+  }, [error, isError, isLoading, navigate, user.email]);
 
   return (
     <Container maxWidth="sm">
@@ -118,7 +114,11 @@ const Login = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <FormControl
-                    error={formik.errors.password && formik.touched.password}
+                    error={
+                      formik.errors.password && formik.touched.password
+                        ? true
+                        : undefined
+                    }
                     variant="outlined"
                     fullWidth
                     required

@@ -1,3 +1,4 @@
+import AlertMessage from '@/components/AlertMessage';
 import {
   useDeleteBookMutation,
   useSingleBookQuery,
@@ -34,7 +35,8 @@ const BookDetails = () => {
   const { user } = useAppSelector((state) => state.user);
   const { data, isLoading } = useSingleBookQuery(id);
 
-  const [updateBook, { isLoading: isUpdateLoading }] = useUpdateBookMutation();
+  const [updateBook, { isLoading: isUpdateLoading, isSuccess, isError }] =
+    useUpdateBookMutation();
 
   const [open, setOpen] = React.useState(false);
 
@@ -45,6 +47,25 @@ const BookDetails = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  // ALERT MESSAGE ACTION START
+  const [alert, setAlert] = React.useState<string | null>(null);
+  const [alertOpen, setAlertOpen] = React.useState(false);
+
+  const handleAlertClick = () => {
+    setAlertOpen(true);
+  };
+  const handleAlertClose = (
+    _event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertOpen(false);
+  };
+  // ALERT MESSAGE ACTION END
 
   const initialValues: IBook = {
     title: data?.data?.title,
@@ -79,11 +100,15 @@ const BookDetails = () => {
     handleClose();
   };
 
-  const [deletePost, { isLoading: isDeleting }] = useDeleteBookMutation();
+  const [deletePost, { isLoading: isDeleteLoading }] = useDeleteBookMutation();
 
   const [
     updateBookWithReview,
-    { isLoading: isUpdateReviewLoading, isSuccess, isError },
+    {
+      isLoading: isUpdateReviewLoading,
+      isSuccess: isReviewSuccess,
+      isError: isReviewError,
+    },
   ] = useUpdateBookWithReviewMutation();
   const [reviewText, setReviewText] = React.useState('');
 
@@ -91,6 +116,17 @@ const BookDetails = () => {
     updateBookWithReview({ id: data?.data?.id, title: reviewText });
     setReviewText('');
   };
+
+  React.useEffect(() => {
+    if (isSuccess || isReviewSuccess) {
+      setAlert('Success');
+      handleAlertClick();
+    }
+    if (isError || isReviewError) {
+      setAlert('Something went wrong');
+      handleAlertClick();
+    }
+  }, [isError, isReviewError, isReviewSuccess, isSuccess]);
 
   return (
     <Container maxWidth="lg">
@@ -254,11 +290,21 @@ const BookDetails = () => {
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={
-          isLoading || isUpdateLoading || isDeleting || isUpdateReviewLoading
+          isLoading ||
+          isUpdateLoading ||
+          isDeleteLoading ||
+          isUpdateReviewLoading
         }
       >
         <CircularProgress color="inherit" />
       </Backdrop>
+
+      {/* ALERT MESSAGE SHOW */}
+      <AlertMessage
+        handleAlertClose={handleAlertClose}
+        alertOpen={alertOpen}
+        alert={alert}
+      />
     </Container>
   );
 };

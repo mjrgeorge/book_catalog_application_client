@@ -1,3 +1,4 @@
+import AlertMessage from '@/components/AlertMessage';
 import BookCard from '@/components/BookCard';
 import {
   useGetBooksQuery,
@@ -69,7 +70,8 @@ const AllBook = () => {
   const { data, isLoading } = useGetBooksQuery(undefined);
   const { user } = useAppSelector((state) => state.user);
 
-  const [postBook, { isLoading: isCreateLoading }] = usePostBookMutation();
+  const [postBook, { isLoading: isCreateLoading, isError, isSuccess, error }] =
+    usePostBookMutation();
 
   const [open, setOpen] = React.useState(false);
 
@@ -80,6 +82,25 @@ const AllBook = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  // ALERT MESSAGE ACTION START
+  const [alert, setAlert] = React.useState<string | null>(null);
+  const [alertOpen, setAlertOpen] = React.useState(false);
+
+  const handleAlertClick = () => {
+    setAlertOpen(true);
+  };
+  const handleAlertClose = (
+    _event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertOpen(false);
+  };
+  // ALERT MESSAGE ACTION END
 
   const initialValues: IBook = {
     title: '',
@@ -135,13 +156,16 @@ const AllBook = () => {
     )
   );
 
-  const handleGenreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setGenreFilter(e.target.value);
-  };
-
-  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setYearFilter(e.target.value);
-  };
+  React.useEffect(() => {
+    if (isSuccess) {
+      setAlert('Success');
+      handleAlertClick();
+    }
+    if (isError) {
+      setAlert('Something went wrong');
+      handleAlertClick();
+    }
+  }, [isError, isSuccess]);
 
   return (
     <Container maxWidth="lg">
@@ -189,14 +213,14 @@ const AllBook = () => {
             select
             label="Genre"
             defaultValue="All"
-            value={genreFilter}
-            onChange={handleGenreChange}
+            value={genreFilter as string}
+            onChange={(e) => setGenreFilter(e.target.value)}
             fullWidth
           >
             <MenuItem value="All">All</MenuItem>
             {uniqueGenres.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
+              <MenuItem key={option as string} value={option as string}>
+                {option as string}
               </MenuItem>
             ))}
           </TextField>
@@ -205,14 +229,14 @@ const AllBook = () => {
             select
             label="Publication Year"
             defaultValue="All"
-            value={yearFilter}
-            onChange={handleYearChange}
+            value={yearFilter as string}
+            onChange={(e) => setYearFilter(e.target.value)}
             fullWidth
           >
             <MenuItem value="All">All</MenuItem>
             {uniqueYears.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
+              <MenuItem key={option as string} value={option as string}>
+                {option as string}
               </MenuItem>
             ))}
           </TextField>
@@ -333,6 +357,13 @@ const AllBook = () => {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
+
+      {/* ALERT MESSAGE SHOW */}
+      <AlertMessage
+        handleAlertClose={handleAlertClose}
+        alertOpen={alertOpen}
+        alert={alert}
+      />
     </Container>
   );
 };

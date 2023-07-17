@@ -28,9 +28,9 @@ const Signup = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, isError, error } = useAppSelector((state) => state.user);
-  
+
   // ALERT MESSAGE ACTION START
-  const [alert, setAlert] = React.useState('');
+  const [alert, setAlert] = React.useState<string | null>(null);
   const [alertOpen, setAlertOpen] = React.useState(false);
 
   const handleAlertClick = () => {
@@ -129,7 +129,11 @@ const Signup = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <FormControl
-                    error={formik.errors.password && formik.touched.password}
+                    error={
+                      formik.errors.password && formik.touched.password
+                        ? true
+                        : undefined
+                    }
                     variant="outlined"
                     fullWidth
                     required
@@ -161,6 +165,8 @@ const Signup = () => {
                   <FormControl
                     error={
                       formik.errors.re_password && formik.touched.re_password
+                        ? true
+                        : undefined
                     }
                     variant="outlined"
                     fullWidth
