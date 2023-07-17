@@ -191,26 +191,24 @@ const BookDetails = () => {
           {data?.data?.title && (
             <CardContent>
               <Typography variant="h6" color="text.secondary" gutterBottom>
-                {data?.data?.title}
+                Title: {data?.data?.title}
               </Typography>
               <Typography
                 variant="subtitle1"
                 sx={{ mb: 1.5 }}
                 color="text.secondary"
               >
-                {data?.data?.author}
+                Author: {data?.data?.author}
               </Typography>
               <Typography
                 variant="subtitle2"
                 sx={{ mb: 1.5 }}
                 color="text.secondary"
               >
-                {data?.data?.genre}
+                Genre: {data?.data?.genre}
               </Typography>
               <Typography variant="body1">
-                Publication Year
-                <br />
-                {data?.data?.publicationYear}
+                Publication Year: {data?.data?.publicationYear}
               </Typography>
               <Stack direction="row" spacing={2} sx={{ my: 3 }}>
                 <TextField
@@ -243,7 +241,7 @@ const BookDetails = () => {
               )}
             </CardContent>
           )}
-          {!data?.data?.title && (
+          {!data?.data?.title && !isLoading && (
             <CardContent>
               <Typography variant="h6" align="center" color="red" gutterBottom>
                 Data Not Found!

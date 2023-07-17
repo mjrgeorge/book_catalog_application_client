@@ -17,26 +17,24 @@ export default function BookCard({ book }: IProps) {
       <Card variant="outlined" sx={{ minWidth: 200 }}>
         <CardContent>
           <Typography variant="h6" color="text.secondary" gutterBottom>
-            {book?.title}
+            Title: {book?.title}
           </Typography>
           <Typography
             variant="subtitle1"
             sx={{ mb: 1.5 }}
             color="text.secondary"
           >
-            {book?.author}
+            Author: {book?.author}
           </Typography>
           <Typography
             variant="subtitle2"
             sx={{ mb: 1.5 }}
             color="text.secondary"
           >
-            {book?.genre}
+            Genre: {book?.genre}
           </Typography>
           <Typography variant="body2">
-            Publication Year
-            <br />
-            {book?.publicationYear}
+            Publication Year: {book?.publicationYear}
           </Typography>
         </CardContent>
         <CardActions>
